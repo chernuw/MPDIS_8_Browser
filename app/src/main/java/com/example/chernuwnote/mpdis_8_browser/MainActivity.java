@@ -1,16 +1,15 @@
 package com.example.chernuwnote.mpdis_8_browser;
 
 import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity implements OnClickListener {
@@ -46,6 +45,7 @@ public class MainActivity extends Activity implements OnClickListener {
         bNext.setEnabled(false);
         bBack.setEnabled(false);
 
+
         wv1 = (WebView) findViewById(R.id.webView);
         wv1.setWebViewClient(new MyBrowser());
     }
@@ -58,26 +58,30 @@ public class MainActivity extends Activity implements OnClickListener {
             wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
             url = "http://www." + url;
             wv1.loadUrl(url);
-            if (wv1.canGoBack()){
-                bBack.setEnabled(true);
-            }
-            if (wv1.canGoForward()){
-                bNext.setEnabled(true);
-            }
         } else if (bBack.equals(view)) {
             if (wv1.canGoBack()) {
                 wv1.goBack();
+            }else{
+                MessageBox("Нельзя перейти назад");
             }
         } else if (bNext.equals(view)) {
             if (wv1.canGoForward()) {
                 wv1.goForward ();
+            }else{
+                MessageBox("Нельзя перейти вперёд");
             }
         } else if (bClear.equals(view)) {
             wv1.clearHistory();
+            bNext.setEnabled(false);
+            bBack.setEnabled(false);
         } else if (bRefresh.equals(view)){
             wv1.reload();
         }
+    }
 
+    public void MessageBox(String message)
+    {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private class MyBrowser extends WebViewClient {
@@ -85,6 +89,18 @@ public class MainActivity extends Activity implements OnClickListener {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
+        }
+        public void onLoadResource (WebView view, String url){
+            if (wv1.canGoBack()) {
+                bBack.setEnabled(true);
+            } else{
+                bBack.setEnabled(false);
+            }
+            if (wv1.canGoForward()) {
+                bNext.setEnabled(true);
+            } else{
+                bNext.setEnabled(false);
+            }
         }
     }
 }
